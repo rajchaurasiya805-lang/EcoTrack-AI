@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="EcoTrack AI - Modern carbon footprint awareness and tracking platform with AI-powered personalized insights and gamified challenges.">
+  <title>EcoTrack AI - Carbon Footprint Tracker</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Mobile Header / Top Bar -->
+    <header class="mobile-header" aria-label="Mobile Navigation Bar">
+      <div class="logo">
+        <i data-lucide="leaf" class="icon-green animate-pulse"></i>
+        <span>EcoTrack <span class="accent-text">AI</span></span>
+      </div>
+      <div class="mobile-header-actions">
+        <button class="theme-toggle-btn" id="theme-toggle-mobile" aria-label="Toggle Theme">
+          <i data-lucide="sun" class="sun-icon"></i>
+          <i data-lucide="moon" class="moon-icon"></i>
+        </button>
+        <button class="menu-toggle" id="menu-toggle-btn" aria-label="Toggle Menu" aria-expanded="false">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="app-sidebar" aria-label="Main Navigation">
+      <div class="sidebar-logo">
+        <i data-lucide="leaf" class="logo-icon animate-pulse"></i>
+        <span>EcoTrack <span class="accent-text">AI</span></span>
+      </div>
+
+      <div class="nav-links">
+        <button class="nav-link active" data-view="dashboard" id="nav-dashboard" aria-current="page">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-link" data-view="calculator" id="nav-calculator">
+          <i data-lucide="calculator"></i>
+          <span>Carbon Calculator</span>
+        </button>
+        <button class="nav-link" data-view="roadmap" id="nav-roadmap">
+          <i data-lucide="milestone"></i>
+          <span>Carbon Roadmap</span>
+        </button>
+        <button class="nav-link" data-view="ai-advisor" id="nav-ai-advisor">
+          <i data-lucide="bot"></i>
+          <span>Eco AI Advisor</span>
+        </button>
+        <button class="nav-link" data-view="challenges" id="nav-challenges">
+          <i data-lucide="award"></i>
+          <span>Challenges & Badges</span>
+        </button>
+      </div>
+
+      <!-- Quick Stats Card in Sidebar -->
+      <div class="sidebar-stats-card">
+        <div class="stat-header">
+          <span class="stat-title">Trees Saved</span>
+          <i data-lucide="trees" class="icon-green"></i>
+        </div>
+        <div class="stat-value" id="sidebar-trees-count">0.0</div>
+        <div class="stat-subtext">via completed challenges</div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="sidebar-progress" style="width: 0%"></div>
+        </div>
+        <div class="stat-progress-label">Next badge at 5 trees</div>
+      </div>
+
+      <!-- Theme Switcher & Footer -->
+      <div class="sidebar-footer">
+        <div class="theme-switch-container">
+          <span>Theme Mode</span>
+          <button class="theme-toggle-btn" id="theme-toggle-desktop" aria-label="Toggle Light/Dark Theme">
+            <i data-lucide="sun" class="sun-icon"></i>
+            <i data-lucide="moon" class="moon-icon"></i>
+          </button>
+        </div>
+        <p>&copy; 2026 EcoTrack AI</p>
+        <p class="footer-subtext">v2.0.0 &bull; Multi-Theme Offline App</p>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content" id="main-content-area">
+
+      <!-- Top Overview Bar (Desktop) -->
+      <div class="top-bar-desktop" aria-label="Quick Stats Summary">
+        <div class="top-bar-welcome">
+          <h1>Welcome to EcoTrack <span class="accent-text">AI</span></h1>
+          <p class="subtitle">Track emissions, complete eco-challenges, and reduce your global impact.</p>
+        </div>
+        <div class="quick-status-group">
+          <div class="quick-stat-item">
+            <i data-lucide="zap" class="icon-amber"></i>
+            <div>
+              <span class="quick-stat-val" id="top-badge-count">0</span>
+              <span class="quick-stat-lbl">Badges Unlocked</span>
+            </div>
+          </div>
+          <div class="quick-stat-item">
+            <i data-lucide="heart" class="icon-rose"></i>
+            <div>
+              <span class="quick-stat-val" id="top-saved-co2">0.0 kg</span>
+              <span class="quick-stat-lbl">CO2 Saved</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= VIEW Panels ================= -->
+
+      <!-- 1. DASHBOARD VIEW -->
+      <section id="dashboard-view" class="view-panel active-view" aria-labelledby="nav-dashboard">
+        <div class="dashboard-grid">
+
+          <!-- Score Summary Card -->
+          <div class="glass-card score-card">
+            <h2>Your Carbon Footprint</h2>
+            <p class="card-subtitle">Estimated carbon emissions based on your footprint log</p>
+            <div class="score-display">
+              <div class="circular-progress-container">
+                <svg viewBox="0 0 100 100" class="gauge-svg">
+                  <circle cx="50" cy="50" r="40" class="gauge-bg"></circle>
+                  <circle cx="50" cy="50" r="40" class="gauge-fill" id="gauge-indicator" stroke-dasharray="251.2"
+                    stroke-dashoffset="251.2"></circle>
+                </svg>
+                <div class="gauge-text">
+                  <span class="score-number" id="dashboard-score">0.0</span>
+                  <span class="score-unit">Tons CO₂e / yr</span>
+                </div>
+              </div>
+              <div class="score-details">
+                <div class="impact-indicator text-medium" id="impact-badge">Medium Impact</div>
+                <p class="impact-description" id="impact-description">Your footprint is close to the national average.
+                  Try adjusting your transit or electric consumption to lower it.</p>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-primary" onclick="app.switchView('calculator')">
+                <i data-lucide="refresh-cw"></i> Update Footprint
+              </button>
+              <button class="btn btn-secondary" id="btn-export-pdf">
+                <i data-lucide="download"></i> Export PDF Report
+              </button>
+            </div>
+          </div>
+
+          <!-- Benchmarking Card (India & Global Comparison) -->
+          <div class="glass-card benchmarking-card">
+            <h2>Score Benchmark Comparisons</h2>
+            <p class="card-subtitle">Your score compared against national and global averages</p>
+
+            <div class="benchmark-list">
+              <!-- India average comparison -->
+              <div class="benchmark-item">
+                <div class="benchmark-info">
+                  <span>India Average</span>
+                  <span class="val font-semibold">1.9 Tons / yr</span>
+                </div>
+                <div class="benchmark-bar-bg">
+                  <div class="benchmark-bar bar-india" style="width: 15.8%"></div>
+                </div>
+              </div>
+
+              <!-- Global average comparison -->
+              <div class="benchmark-item">
+                <div class="benchmark-info">
+                  <span>Global Average</span>
+                  <span class="val font-semibold">4.7 Tons / yr</span>
+                </div>
+                <div class="benchmark-bar-bg">
+                  <div class="benchmark-bar bar-global" style="width: 39.1%"></div>
+                </div>
+              </div>
+
+              <!-- User comparison -->
+              <div class="benchmark-item user-benchmark">
+                <div class="benchmark-info">
+                  <span>Your Footprint</span>
+                  <span class="val font-bold" id="benchmark-user-val">0.0 Tons / yr</span>
+                </div>
+                <div class="benchmark-bar-bg">
+                  <div class="benchmark-bar bar-user" id="benchmark-user-bar" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="comparison-status-badge" id="comparison-badge">
+              Calculating comparison...
+            </div>
+          </div>
+
+          <!-- Doughnut/Pie Chart: Footprint Breakdown -->
+          <div class="glass-card chart-card">
+            <div class="card-header-actions">
+              <h2>Emissions Breakdown</h2>
+              <div class="chart-toggle-group">
+                <button class="chart-toggle-btn active" id="btn-chart-doughnut"
+                  aria-label="Show Doughnut Chart">Doughnut</button>
+                <button class="chart-toggle-btn" id="btn-chart-pie" aria-label="Show Pie Chart">Pie</button>
+              </div>
+            </div>
+            <p class="card-subtitle">Distribution of carbon footprint across categories</p>
+            <div class="chart-wrapper">
+              <canvas id="breakdownChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Line Chart: Savings / Log History -->
+          <div class="glass-card chart-card">
+            <h2>Carbon History & Savings</h2>
+            <p class="card-subtitle">Cumulative carbon emissions offset over time</p>
+            <div class="chart-wrapper">
+              <canvas id="historyChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Tree Plantation Calculator Card -->
+          <div class="glass-card offset-calculator-card">
+            <div class="card-header-icon">
+              <h2>Plantation Offset Calculator</h2>
+              <i data-lucide="calculator" class="card-icon icon-green"></i>
+            </div>
+            <p class="card-subtitle">Calculate resources needed to offset an custom emissions target</p>
+
+            <div class="offset-calc-body">
+              <div class="form-group">
+                <label for="offset-input-co2">Target CO₂ to Offset (kg / year)</label>
+                <input type="number" id="offset-input-co2" min="1" value="1000" class="input-theme">
+              </div>
+              <div class="calc-results">
+                <div class="calc-res-item">
+                  <span class="calc-lbl">Mature Trees Required</span>
+                  <span class="calc-val text-green" id="calc-trees-num">45</span>
+                </div>
+                <div class="calc-res-item">
+                  <span class="calc-lbl">Forest Land Required</span>
+                  <span class="calc-val text-green" id="calc-land-num">450 m²</span>
+                </div>
+                <div class="calc-res-item">
+                  <span class="calc-lbl">Years to Maturity</span>
+                  <span class="calc-val text-amber">5 - 10 Years</span>
+                </div>
+              </div>
+              <small class="help-text">Assumes average sequestration of 22kg CO2/year per mature tree, spaced at 10m²
+                per tree.</small>
+            </div>
+          </div>
+
+          <!-- Offset Equivalents Card -->
+          <div class="glass-card offset-card">
+            <div class="card-header-icon">
+              <h2>Offset Equivalents</h2>
+              <i data-lucide="trees" class="card-icon icon-green"></i>
+            </div>
+            <p class="card-subtitle">What your carbon footprint means in natural offsets</p>
+            <div class="offset-grid">
+              <div class="offset-metric">
+                <div class="offset-number text-rose" id="trees-required-val">0</div>
+                <div class="offset-label">Trees needed to offset / yr</div>
+                <p class="offset-sub">Each mature tree absorbs approx 22kg CO2 yearly.</p>
+              </div>
+              <div class="offset-divider"></div>
+              <div class="offset-metric">
+                <div class="offset-number text-green" id="trees-saved-val">0.0</div>
+                <div class="offset-label">Trees saved by your efforts</div>
+                <p class="offset-sub">Based on your completed sustainability challenges!</p>
+              </div>
+            </div>
+            <div class="badge-progress-mini">
+              <div class="progress-info">
+                <span>Green Badges Progress</span>
+                <span id="badge-progress-percent">0%</span>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-bar bar-emerald" id="dashboard-badge-progress-bar" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Eco AI Quick Advice Box -->
+          <div class="glass-card advice-card colspan-2">
+            <div class="advice-header">
+              <div class="advisor-meta">
+                <i data-lucide="bot" class="ai-bot-icon animate-float"></i>
+                <div>
+                  <h3>Eco AI Instant Recommendation</h3>
+                  <span class="ai-badge">AI Active</span>
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="app.switchView('ai-advisor')">
+                Ask Chat Advisor <i data-lucide="arrow-right"></i>
+              </button>
+            </div>
+            <div class="advice-content">
+              <p id="dashboard-quick-advice">Please update your carbon footprint data in the calculator to unlock
+                personalized, high-fidelity AI recommendations tailored to your profile.</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 2. CALCULATOR VIEW -->
+      <section id="calculator-view" class="view-panel" aria-labelledby="nav-calculator">
+        <div class="calculator-container">
+          <div class="glass-card wizard-card">
+            <div class="wizard-header">
+              <h2>Carbon Footprint Estimator</h2>
+              <p>Provide your household energy, transportation, and dietary habits to generate your baseline score.</p>
+
+              <!-- Stepper -->
+              <div class="stepper">
+                <div class="step-node active" data-step="1" id="step-node-1">
+                  <span class="step-num">1</span>
+                  <span class="step-name">Transportation</span>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step-node" data-step="2" id="step-node-2">
+                  <span class="step-num">2</span>
+                  <span class="step-name">Energy & Utilities</span>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step-node" data-step="3" id="step-node-3">
+                  <span class="step-num">3</span>
+                  <span class="step-name">Food & Diet</span>
+                </div>
+              </div>
+            </div>
+
+            <form id="calculator-form" onsubmit="event.preventDefault();">
+
+              <!-- Step 1: Transportation -->
+              <div class="wizard-step step-visible" id="wizard-step-1">
+                <h3><i data-lucide="car" class="step-title-icon"></i> Step 1: Weekly Commute & Transportation</h3>
+                <p class="step-desc">Tell us how you get around on a weekly basis. Estimates are perfectly fine.</p>
+
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="car-distance">Car Commute (km / week)</label>
+                    <input type="number" id="car-distance" min="0" value="120" placeholder="e.g. 100">
+                  </div>
+                  <div class="form-group">
+                    <label for="car-type">Car Engine Type</label>
+                    <select id="car-type">
+                      <option value="petrol">Petrol / Gas</option>
+                      <option value="diesel">Diesel</option>
+                      <option value="hybrid">Hybrid</option>
+                      <option value="electric">Electric (EV)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="bike-distance">Motorcycle / Scooter (km / week)</label>
+                    <input type="number" id="bike-distance" min="0" value="0" placeholder="e.g. 50">
+                  </div>
+                  <div class="form-group">
+                    <label for="bus-distance">Bus Transit (km / week)</label>
+                    <input type="number" id="bus-distance" min="0" value="30" placeholder="e.g. 20">
+                  </div>
+                  <div class="form-group">
+                    <label for="train-distance">Train / Metro Transit (km / week)</label>
+                    <input type="number" id="train-distance" min="0" value="40" placeholder="e.g. 60">
+                  </div>
+                  <div class="form-group">
+                    <label for="active-distance">Active Commute - Walk & Cycle (km / week)</label>
+                    <input type="number" id="active-distance" min="0" value="10" placeholder="e.g. 15">
+                    <small class="help-text">Cycling and walking are zero carbon! We use this to track your active
+                      metrics.</small>
+                  </div>
+                </div>
+
+                <div class="wizard-footer">
+                  <div></div>
+                  <button type="button" class="btn btn-primary next-step-btn" data-next="2">
+                    Next: Energy & Utilities <i data-lucide="chevron-right"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Step 2: Energy & Home Utilities -->
+              <div class="wizard-step" id="wizard-step-2">
+                <h3><i data-lucide="zap" class="step-title-icon"></i> Step 2: Household Energy & Electricity</h3>
+                <p class="step-desc">Enter your monthly utilities usage. This represents the emissions associated with
+                  heating, cooling, and powering your home.</p>
+
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="electricity-usage">Monthly Electricity Consumption (kWh)</label>
+                    <input type="number" id="electricity-usage" min="0" value="250"
+                      placeholder="Check your utility bill (e.g. 200)">
+                    <small class="help-text">Average single household consumes roughly 150-300 kWh monthly.</small>
+                  </div>
+                  <div class="form-group">
+                    <label for="gas-bill">Monthly Natural Gas / Heating Bill ($)</label>
+                    <input type="number" id="gas-bill" min="0" value="25" placeholder="e.g. 30">
+                  </div>
+                  <div class="form-group">
+                    <label for="household-size">Household Size (People)</label>
+                    <input type="number" id="household-size" min="1" value="1" placeholder="e.g. 1">
+                    <small class="help-text">We divide energy emissions by household size to find your individual
+                      impact.</small>
+                  </div>
+                </div>
+
+                <div class="wizard-footer">
+                  <button type="button" class="btn btn-secondary prev-step-btn" data-prev="1">
+                    <i data-lucide="chevron-left"></i> Back to Commute
+                  </button>
+                  <button type="button" class="btn btn-primary next-step-btn" data-next="3">
+                    Next: Food & Diet <i data-lucide="chevron-right"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Step 3: Diet Habits -->
+              <div class="wizard-step" id="wizard-step-3">
+                <h3><i data-lucide="utensils" class="step-title-icon"></i> Step 3: Food Habits & Diet</h3>
+                <p class="step-desc">Agriculture, livestock farming, and logistics contribute heavily to global
+                  emissions. Select your general dietary style.</p>
+
+                <div class="diet-selector-group" role="radiogroup" aria-label="Diet habit selection">
+                  <div class="diet-option-card" data-diet="vegan" tabindex="0" role="radio" aria-checked="false">
+                    <div class="diet-header">
+                      <i data-lucide="leaf" class="diet-icon text-green"></i>
+                      <h4>Vegan</h4>
+                    </div>
+                    <p>Entirely plant-based diet. Lowest carbon footprint due to absence of meat and dairy.</p>
+                    <span class="diet-footprint-label">~1.5 Tons CO₂e/yr</span>
+                  </div>
+                  <div class="diet-option-card active" data-diet="vegetarian" tabindex="0" role="radio"
+                    aria-checked="true">
+                    <div class="diet-header">
+                      <i data-lucide="egg" class="diet-icon text-amber"></i>
+                      <h4>Vegetarian</h4>
+                    </div>
+                    <p>Plant-based diet but includes dairy and eggs. Moderate footprint due to dairy processing
+                      emissions.</p>
+                    <span class="diet-footprint-label">~1.7 Tons CO₂e/yr</span>
+                  </div>
+                  <div class="diet-option-card" data-diet="low-meat" tabindex="0" role="radio" aria-checked="false">
+                    <div class="diet-header">
+                      <i data-lucide="poultry" class="diet-icon text-rose"></i>
+                      <h4>Low Meat / Flexitarian</h4>
+                    </div>
+                    <p>Primarily vegetarian diet, but occasionally consumes poultry or fish. Moderately high carbon
+                      footprint.</p>
+                    <span class="diet-footprint-label">~2.5 Tons CO₂e/yr</span>
+                  </div>
+                  <div class="diet-option-card" data-diet="high-meat" tabindex="0" role="radio" aria-checked="false">
+                    <div class="diet-header">
+                      <i data-lucide="beef" class="diet-icon text-rose-dark"></i>
+                      <h4>High Meat Consumer</h4>
+                    </div>
+                    <p>Frequent consumer of red meat (beef, pork, lamb). Highest carbon intensity due to livestock
+                      methane.</p>
+                    <span class="diet-footprint-label">~3.3 Tons CO₂e/yr</span>
+                  </div>
+                </div>
+
+                <div class="wizard-footer">
+                  <button type="button" class="btn btn-secondary prev-step-btn" data-prev="2">
+                    <i data-lucide="chevron-left"></i> Back to Utilities
+                  </button>
+                  <button type="button" class="btn btn-emerald btn-lg" id="submit-calculation-btn">
+                    Calculate Footprint <i data-lucide="check-circle-2"></i>
+                  </button>
+                </div>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. PERSONALIZED ROADMAP VIEW -->
+      <section id="roadmap-view" class="view-panel" aria-labelledby="nav-roadmap">
+        <div class="roadmap-container">
+          <div class="glass-card roadmap-card">
+            <div class="roadmap-header">
+              <h2>My Carbon Reduction Roadmap</h2>
+              <p>Your step-by-step milestone action plan, generated dynamically from your carbon calculators profile.
+              </p>
+            </div>
+
+            <div class="roadmap-timeline" id="roadmap-timeline-container">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. ECO AI ADVISOR VIEW -->
+      <section id="ai-advisor-view" class="view-panel" aria-labelledby="nav-ai-advisor">
+        <div class="ai-container">
+
+          <!-- AI Panel Sidebar / Strategy Generator -->
+          <div class="glass-card ai-controls-card">
+            <div class="ai-brand">
+              <i data-lucide="bot" class="ai-logo-icon"></i>
+              <div>
+                <h2>Eco AI Advisor</h2>
+                <p>Personalized Carbon Reduction Strategies</p>
+              </div>
+            </div>
+            <p class="ai-controls-intro">The AI Advisor uses your current carbon profile (Transport, energy, diet
+              inputs) to run diagnostic simulations and build custom reduction strategies.</p>
+
+            <div class="diagnostic-score-box">
+              <span class="diag-lbl">Current Emissions Baseline</span>
+              <span class="diag-val" id="ai-current-score">0.0 Tons / Year</span>
+            </div>
+
+            <button class="btn btn-emerald btn-full" id="btn-generate-report">
+              <i data-lucide="sparkles"></i> Generate Full Audit Report
+            </button>
+
+            <!-- Quick Action Prompts -->
+            <div class="quick-prompts-section">
+              <h4>Quick Diagnostic Prompts</h4>
+              <div class="quick-prompts-list">
+                <button class="prompt-chip"
+                  data-prompt="Analyze my commute footprint and give me 3 green alternatives.">
+                  <i data-lucide="car"></i> Commute Alternatives
+                </button>
+                <button class="prompt-chip"
+                  data-prompt="How does my diet impact the planet, and how can I switch painlessly?">
+                  <i data-lucide="utensils"></i> Diet Impact Audit
+                </button>
+                <button class="prompt-chip" data-prompt="What are some cost-saving home energy conservation tips?">
+                  <i data-lucide="zap"></i> Home Energy Savings
+                </button>
+                <button class="prompt-chip"
+                  data-prompt="Explain the difference between carbon neutrality and net-zero.">
+                  <i data-lucide="help-circle"></i> Neutrality vs Net-Zero
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Chat & Output Panel -->
+          <div class="glass-card ai-chat-card">
+            <!-- Chat Header -->
+            <div class="chat-header">
+              <div class="chat-status">
+                <span class="pulse-indicator"></span>
+                <span>Eco Advisor Model v2.4 (Online)</span>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="btn-clear-chat" aria-label="Clear chat history">
+                <i data-lucide="trash-2"></i> Clear Chat
+              </button>
+            </div>
+
+            <!-- Messages Window -->
+            <div class="chat-messages" id="chat-messages-container">
+              <!-- Welcome Message -->
+              <div class="message system-message">
+                <div class="msg-avatar">
+                  <i data-lucide="bot"></i>
+                </div>
+                <div class="msg-body">
+                  <p>Hello! I am your **Eco AI Advisor**. I analyze your carbon footprint data and provide tailored,
+                    actionable advice to help you live more sustainably.</p>
+                  <p>Click **"Generate Full Audit Report"** on the left to see a complete carbon reduction audit, or ask
+                    me any question about carbon reduction, climate science, or green living below.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Typing Indicator (Hidden by default) -->
+            <div class="typing-indicator" id="chat-typing-indicator" style="display: none;">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+
+            <!-- Input Bar -->
+            <div class="chat-input-bar">
+              <label for="chat-text-input" class="visually-hidden">Ask Eco AI Advisor</label>
+              <input type="text" id="chat-text-input"
+                placeholder="Ask about reducing emissions, offsets, eco-friendly habits..." autocomplete="off">
+              <button class="btn btn-emerald" id="chat-send-btn" aria-label="Send message">
+                <i data-lucide="send"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 5. CHALLENGES & BADGES VIEW -->
+      <section id="challenges-view" class="view-panel" aria-labelledby="nav-challenges">
+        <div class="challenges-layout">
+
+          <!-- Active Challenges (Left column) -->
+          <div class="glass-card challenges-card">
+            <div class="challenges-header-group">
+              <h2>Weekly Sustainability Challenges</h2>
+              <span class="weekly-reset-tag">Resets in 4 days</span>
+            </div>
+            <p class="card-subtitle">Take concrete actions to lower your carbon footprint. Each completed challenge
+              immediately saves carbon and earns XP towards badge unlocks!</p>
+
+            <div class="challenges-list" id="challenges-list-container">
+              <!-- Challenges injected via JS -->
+            </div>
+          </div>
+
+          <!-- Badges & Gamification Showcase (Right column) -->
+          <div class="glass-card badges-card">
+            <h2>Your Green Badges</h2>
+            <p class="card-subtitle">Unlock badges by completing sustainability challenges, reducing emissions, and
+              logging footprints. Click a badge to view details.</p>
+
+            <div class="badge-stats-summary">
+              <div class="badge-stat">
+                <span class="num" id="unlocked-badge-count-card">0</span>
+                <span class="lbl">Unlocked</span>
+              </div>
+              <div class="badge-stat">
+                <span class="num" id="locked-badge-count-card">6</span>
+                <span class="lbl">Locked</span>
+              </div>
+              <div class="badge-stat">
+                <span class="num" id="weekly-challenge-score">0</span>
+                <span class="lbl">Actions Completed</span>
+              </div>
+            </div>
+
+            <!-- Badges Grid -->
+            <div class="badges-grid" id="badges-grid-container">
+              <!-- Badges injected via JS -->
+            </div>
+          </div>
+
+          <!-- Weekly sustainability tips (Full width bottom slider) -->
+          <div class="glass-card tips-card">
+            <div class="tips-header">
+              <div class="tips-title-box">
+                <i data-lucide="lightbulb" class="icon-amber animate-pulse"></i>
+                <h2>Weekly Sustainability Tips & Insights</h2>
+              </div>
+              <div class="tips-navigation">
+                <button class="tips-nav-btn" id="tip-prev" aria-label="Previous tip"><i
+                    data-lucide="chevron-left"></i></button>
+                <button class="tips-nav-btn" id="tip-next" aria-label="Next tip"><i
+                    data-lucide="chevron-right"></i></button>
+              </div>
+            </div>
+
+            <div class="tip-carousel-content" id="tip-carousel-box">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Badge Details Modal Dialog -->
+  <div class="modal-overlay" id="badge-modal" style="display: none;" role="dialog" aria-modal="true"
+    aria-labelledby="modal-badge-title">
+    <div class="glass-card modal-content">
+      <button class="modal-close-btn" id="badge-modal-close" aria-label="Close modal"><i data-lucide="x"></i></button>
+      <div class="modal-body">
+        <div class="modal-badge-icon-wrap" id="modal-badge-icon-container">
+          <i data-lucide="award"></i>
+        </div>
+        <h3 id="modal-badge-title">Badge Title</h3>
+        <div class="modal-badge-status" id="modal-badge-status">Locked</div>
+        <p class="modal-badge-desc" id="modal-badge-desc">Badge detailed description goes here...</p>
+        <div class="modal-badge-criteria">
+          <strong>Unlock criteria:</strong>
+          <span id="modal-badge-criteria-text">Criteria text</span>
+        </div>
+        <div class="modal-badge-action-hint" id="modal-badge-action-hint">
+          Action suggestion hint content
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Chatbot Toggle Trigger -->
+  <button class="floating-chat-btn" id="floating-chat-trigger" aria-label="Open AI Sustainability Assistant"
+    aria-expanded="false">
+    <i data-lucide="message-square" class="chat-open-icon"></i>
+    <i data-lucide="x" class="chat-close-icon" style="display: none;"></i>
+    <span class="chat-badge-pulse"></span>
+  </button>
+
+  <!-- Floating Chatbot Widget -->
+  <div class="floating-chat-window" id="floating-chat-widget" style="display: none;"
+    aria-label="AI Chat Assistant Widget">
+    <div class="chat-widget-header">
+      <div class="chat-widget-title">
+        <i data-lucide="bot" class="widget-bot-icon"></i>
+        <div>
+          <h4>EcoTrack AI Assistant</h4>
+          <span class="status">Sustainability Expert (Online)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-widget-messages" id="widget-messages-container">
+      <div class="widget-msg system">
+        <p>Hi there! I'm your AI Sustainability Assistant. Ask me anything about reducing your carbon footprint,
+          eco-habits, or environmental issues!</p>
+      </div>
+    </div>
+
+    <div class="chat-widget-input-bar">
+      <label for="widget-text-input" class="visually-hidden">Type message to AI</label>
+      <input type="text" id="widget-text-input" placeholder="Type a message..." autocomplete="off">
+      <button id="widget-send-btn" aria-label="Send message to AI">
+        <i data-lucide="send"></i>
+      </button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
